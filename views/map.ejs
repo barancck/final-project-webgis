@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web GIS Map</title>
+  <!-- Basic Leaflet CSS/JS from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    #map {
+      height: 600px; 
+      border: 1px solid #ddd;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a> | 
+    <a href="/logout">Logout</a> |
+    <a href="/features">List Features (JSON)</a> |
+    <a href="/features-geojson">Export GeoJSON</a>
+  </nav>
+  <h1>My Web GIS Map</h1>
+  <div id="map"></div>
+
+  <script>
+    // Initialize map (center on some region, e.g. Turkey)
+    const map = L.map('map').setView([39, 35], 6);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(map);
+
+    // Fetch existing features in GeoJSON
+    fetch('/features/-geojson')
+      .then(res => res.json())
+      .then(geojsonData => {
+        L.geoJSON(geojsonData, {
+          onEachFeature: function(feature, layer) {
+            // Display popup with 'name'
+            layer.bindPopup(feature.properties.name || 'No name');
+          }
+        }).addTo(map);
+      })
+      .catch(err => console.error(err));
+
+    // Allow user to add points by clicking
+    map.on('click', function(e) {
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+
+      const name = prompt('Enter a name for this point:');
+      if (name) {
+        // Send to /features
+        fetch('/features', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            lat: lat,
+            lng: lng
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message || 'Created');
+        })
+        .catch(console.error);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+/* public/styles.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #060404;
+}
+
+h1 {
+  color: #cd0a0a;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+input {
+  display: block;
+  margin-bottom: 10px;
+  padding: 6px;
+  width: 200px;
+}
+
+button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+a {
+  color: #11b043;
+  text-decoration: none;
+}
+p {
+  color: aliceblue;
+}
+label {
+  color: aliceblue;
+}
